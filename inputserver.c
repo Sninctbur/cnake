@@ -43,4 +43,7 @@ void inputServerStop(){
     pthread_mutex_unlock(&activeMutex);
 
     pthread_join(thread, NULL);
+
+    pthread_mutex_destroy(&inputMutex);
+    pthread_mutex_destroy(&activeMutex);
 }
