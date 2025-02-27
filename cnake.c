@@ -2,6 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 // Platform specification
 #ifndef _WIN32
@@ -19,6 +20,7 @@
 #endif
 
 #include "cnake.h"
+#include "inputserver.c"
 
 
 int gameBoard[BOARD_SIZE][BOARD_SIZE];
@@ -67,7 +69,8 @@ enum GAME_STATE gameTick(){
     }
 
     // Parse user input
-    if(kbhit()) switch(getch()){
+    pthread_mutex_lock(&inputMutex);
+    switch(input){
         case KEY_UP:
             if(direction != DOWN)
                 direction = UP;
@@ -85,6 +88,7 @@ enum GAME_STATE gameTick(){
                 direction = RIGHT;
             break;
     }
+    pthread_mutex_unlock(&inputMutex);
 
     // Update snake position
     switch(direction){
@@ -169,6 +173,8 @@ int main(int argc, char **argv){
             }
         }
 
+        inputServerInit();
+
         printf("\x1b[2J");
 
         enum GAME_STATE state = gameTick();
@@ -181,6 +187,7 @@ int main(int argc, char **argv){
             state = gameTick();
         }
         
+        inputServerStop();
         printf("Score: %d\n", snakeLength - STARTING_LENGTH);
         resetGame();
     }

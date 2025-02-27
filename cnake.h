@@ -23,7 +23,6 @@ enum SNAKE_DIR {
 struct vector2 {
     int x, y;
 };
-
 int vectorsEqual(struct vector2 a, struct vector2 b){
     return a.x == b.x && a.y == b.y;
 }
