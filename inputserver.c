@@ -31,13 +31,16 @@ void *inputServerThread(){
 
 void inputServerInit(){
     if(pthread_mutex_init(&inputMutex, NULL) != 0)
-        fprintf(stderr, "inputMutex init failed");
+        fprintf(stderr, "inputMutex init failed\n");
     
     active = true;
     pthread_create(&thread, NULL, &inputServerThread, NULL);
 }
 
 void inputServerStop(){
+    pthread_mutex_lock(&activeMutex);
     active = false;
+    pthread_mutex_unlock(&activeMutex);
+
     pthread_join(thread, NULL);
 }
