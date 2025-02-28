@@ -14,18 +14,34 @@
 #include <unistd.h>
 #include <termios.h>
 #define UNIX 1
-#define input_func getchar()
+// Emulation of conio getch behavior (credit to /u/ptkrisada)
+void getch(){
+    char ch;
+    struct termios oldAttr, newAttr;
 
-void fixAnsi(){}
+    tcgetattr(STDIN_FILENO, &oldAttr);
+    newAttr = oldAttr;
+    newAttr.c_lflag &= ~ICANON;
+    newAttr.c_lflag &= ~ECHO;
+    newattr.c_cc[VMIN] = 1;
+    newattr.c_cc[VTIME] = 0;
+    
+    tcsetattr(STDIN_FILENO, TCSANOW, &newAttr);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldAttr);
+
+    return ch;
+}
+
+void initSettings(){}
 
 #else
 #include <windows.h>
 #include <conio.h>
 #define UNIX 0
 #define sleep(time) Sleep(time)
-#define input_func getch()
 
-int fixAnsi(){
+int initSettings(){
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hOut == INVALID_HANDLE_VALUE)
     {

@@ -140,7 +140,7 @@ void displayBoard(){
 
 
 int main(int argc, char **argv){
-    fixAnsi(); // On Windows, runs some unique code. On Unix, this is a method stub.
+    initSettings(); // On Windows, runs some unique code. On Unix, this is a method stub.
     printf("\x1b[2J"); // ANSI code ESC[2J: clear the screen
     srand(time(0));
 
