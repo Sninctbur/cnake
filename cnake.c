@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <stdlib.h>
 #include "cnake.h"
 #include "inputserver.c"
 
@@ -170,7 +171,7 @@ int main(int argc, char **argv){
         while(state == OK){
             displayBoard();
             
-            sleep(SLEEP_TIME);
+            usleep(SLEEP_TIME);
 
             state = gameTick();
         }

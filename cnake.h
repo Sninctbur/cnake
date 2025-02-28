@@ -1,4 +1,4 @@
-#define SLEEP_TIME 100.0
+#define SLEEP_TIME 1000
 #define BOARD_SIZE 12
 #define STARTING_LENGTH 3
 #define BOARD_SIZE_SQRD BOARD_SIZE * BOARD_SIZE
@@ -13,34 +13,49 @@
 #ifndef _WIN32
 #include <unistd.h>
 #include <termios.h>
-#include <ncurses.h>
+#include <sys/ioctl.h>
 #define UNIX 1
-int kbhit() {
-    static const int STDIN = 0;
-    static bool initialized = false;
- 
-    if (! initialized) {
-        // Use termios to turn off line buffering
-        termios term;
-        tcgetattr(STDIN, &term);
-        term.c_lflag &= ~ICANON;
-        tcsetattr(STDIN, TCSANOW, &term);
-        setbuf(stdin, NULL);
-        initialized = true;
-    }
- 
-    int bytesWaiting;
-    ioctl(STDIN, FIONREAD, &bytesWaiting);
-    return bytesWaiting;
+
+// // This game was originally made for Windows, like a smut
+int rand(){
+    return random();
 }
 
-void initSettings(){}
+int getch(){
+    struct termios oldMode, newMode;
+    int ch;
+
+    tcgetattr(STDIN_FILENO, &oldMode);
+    newMode = oldMode;
+    newMode.c_lflag &= ~(ICANON | ECHO);
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &newMode);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldMode);
+    return ch;
+}
+
+int kbhit(){
+    struct termios oldMode, newMode;
+    int bytesWaiting;
+
+    tcgetattr(STDIN_FILENO, &oldMode);
+    newMode = oldMode;
+    newMode.c_lflag &= ~(ICANON);
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &newMode);
+    ioctl(0, FIONREAD, &bytesWaiting);
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldMode);
+    return bytesWaiting > 0;
+}
+
+int initSettings(){}
 
 #else
 #include <windows.h>
 #include <conio.h>
 #define UNIX 0
-#define sleep(time) Sleep(time)
+#define usleep(time) Sleep(time)
 
 int initSettings(){
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
