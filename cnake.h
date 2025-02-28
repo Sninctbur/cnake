@@ -2,6 +2,7 @@
 #define BOARD_SIZE 12
 #define STARTING_LENGTH 3
 #define BOARD_SIZE_SQRD BOARD_SIZE * BOARD_SIZE
+#define APPLE_PADDING 1
 
 #define KEY_UP 72
 #define KEY_DOWN 80
