@@ -13,24 +13,25 @@
 #ifndef _WIN32
 #include <unistd.h>
 #include <termios.h>
+#include <ncurses.h>
 #define UNIX 1
-// Emulation of conio getch behavior (credit to /u/ptkrisada)
-void getch(){
-    char ch;
-    struct termios oldAttr, newAttr;
-
-    tcgetattr(STDIN_FILENO, &oldAttr);
-    newAttr = oldAttr;
-    newAttr.c_lflag &= ~ICANON;
-    newAttr.c_lflag &= ~ECHO;
-    newattr.c_cc[VMIN] = 1;
-    newattr.c_cc[VTIME] = 0;
-    
-    tcsetattr(STDIN_FILENO, TCSANOW, &newAttr);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldAttr);
-
-    return ch;
+int kbhit() {
+    static const int STDIN = 0;
+    static bool initialized = false;
+ 
+    if (! initialized) {
+        // Use termios to turn off line buffering
+        termios term;
+        tcgetattr(STDIN, &term);
+        term.c_lflag &= ~ICANON;
+        tcsetattr(STDIN, TCSANOW, &term);
+        setbuf(stdin, NULL);
+        initialized = true;
+    }
+ 
+    int bytesWaiting;
+    ioctl(STDIN, FIONREAD, &bytesWaiting);
+    return bytesWaiting;
 }
 
 void initSettings(){}
