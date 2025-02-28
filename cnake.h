@@ -9,6 +9,45 @@
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 
+// Platform specification
+#ifndef _WIN32
+#include <unistd.h>
+#include <termios.h>
+#define UNIX 1
+#define input_func getchar()
+
+void fixAnsi(){}
+
+#else
+#include <windows.h>
+#include <conio.h>
+#define UNIX 0
+#define sleep(time) Sleep(time)
+#define input_func getch()
+
+int fixAnsi(){
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut == INVALID_HANDLE_VALUE)
+    {
+        return GetLastError();
+    }
+
+    DWORD dwMode = 0;
+    if (!GetConsoleMode(hOut, &dwMode))
+    {
+        return GetLastError();
+    }
+
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    if (!SetConsoleMode(hOut, dwMode))
+    {
+        return GetLastError();
+    }
+    return 0;
+}
+#endif
+
+
 enum GAME_STATE {
     OK,
     DEAD

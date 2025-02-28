@@ -3,22 +3,6 @@
 #include <time.h>
 #include <stdbool.h>
 #include <pthread.h>
-
-// Platform specification
-#ifndef _WIN32
-#include <unistd.h>
-#include <termios.h>
-#define UNIX 1
-#define sleep_usec(time) sleep(time)
-#define input_func getchar()
-#else
-#include <windows.h>
-#include <conio.h>
-#define UNIX 0
-#define sleep_usec(time) Sleep(time)
-#define input_func getch()
-#endif
-
 #include "cnake.h"
 #include "inputserver.c"
 
@@ -156,25 +140,7 @@ void displayBoard(){
 
 
 int main(int argc, char **argv){
-    // Windows: Set output mode to handle virtual terminal sequences
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (hOut == INVALID_HANDLE_VALUE)
-    {
-        return GetLastError();
-    }
-
-    DWORD dwMode = 0;
-    if (!GetConsoleMode(hOut, &dwMode))
-    {
-        return GetLastError();
-    }
-
-    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    if (!SetConsoleMode(hOut, dwMode))
-    {
-        return GetLastError();
-    }
-
+    fixAnsi(); // On Windows, runs some unique code. On Unix, this is a method stub.
     printf("\x1b[2J"); // ANSI code ESC[2J: clear the screen
     srand(time(0));
 
@@ -204,7 +170,7 @@ int main(int argc, char **argv){
         while(state == OK){
             displayBoard();
             
-            sleep_usec(SLEEP_TIME);
+            sleep(SLEEP_TIME);
 
             state = gameTick();
         }
