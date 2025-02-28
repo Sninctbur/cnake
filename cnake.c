@@ -30,15 +30,16 @@ bool DEBUG;
 enum SNAKE_DIR direction;
 
 #define RAND_CONSTANT (BOARD_SIZE - APPLE_PADDING * 2)
+#define randomize_position() rand() % RAND_CONSTANT + APPLE_PADDING;
 
 
 void setApplePos(){
-    applePos.x = rand() % RAND_CONSTANT + APPLE_PADDING;
-    applePos.y = rand() % RAND_CONSTANT + APPLE_PADDING;
+    applePos.x = randomize_position();
+    applePos.y = randomize_position();
     
     while(gameBoard[applePos.x][applePos.y] != 0){
-        applePos.x = rand() % BOARD_SIZE;
-        applePos.y = rand() % BOARD_SIZE;
+        applePos.x = randomize_position();
+        applePos.y = randomize_position();
     }
 
     gameBoard[applePos.x][applePos.y] = -1;
