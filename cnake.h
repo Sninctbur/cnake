@@ -4,19 +4,21 @@
 #define BOARD_SIZE_SQRD BOARD_SIZE * BOARD_SIZE
 #define APPLE_PADDING 1
 
-#define KEY_UP 72
-#define KEY_DOWN 80
-#define KEY_LEFT 75
-#define KEY_RIGHT 77
-
 // Platform specification
 #ifndef _WIN32
 #include <unistd.h>
 #include <termios.h>
 #include <sys/ioctl.h>
+#include <fcntl.h>
 #define UNIX 1
 
-// // This game was originally made for Windows, like a smut
+#define KEY_UP 65
+#define KEY_DOWN 66
+#define KEY_LEFT 68
+#define KEY_RIGHT 67
+
+// This game was originally made for Windows, like a smut
+// So we emulate the functions it was using
 int rand(){
     return random();
 }
@@ -32,6 +34,7 @@ int getch(){
     tcsetattr(STDIN_FILENO, TCSANOW, &newMode);
     ch = getchar();
     tcsetattr(STDIN_FILENO, TCSANOW, &oldMode);
+
     return ch;
 }
 
@@ -49,7 +52,12 @@ int kbhit(){
     return bytesWaiting > 0;
 }
 
-int initSettings(){}
+int initSettings(){
+    // struct termios settings;
+    // tcgetattr(STDIN_FILENO, &settings);
+    // settings.c_lflag &= ~(ICANON | ECHO);
+    // tcsetattr(STDIN_FILENO, TCSANOW, &settings);
+}
 
 #define sleep_msec(time) usleep(time * 1000)
 
@@ -58,6 +66,11 @@ int initSettings(){}
 #include <conio.h>
 #define UNIX 0
 #define sleep_msec(time) Sleep(time)
+
+#define KEY_UP 72
+#define KEY_DOWN 80
+#define KEY_LEFT 75
+#define KEY_RIGHT 77
 
 int initSettings(){
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);

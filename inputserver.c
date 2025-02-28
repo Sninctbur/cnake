@@ -8,7 +8,6 @@ bool active;
 pthread_t thread;
 pthread_mutex_t inputMutex, activeMutex;
 
-#ifdef _WIN32
 void *inputServerThread(){
     pthread_mutex_lock(&activeMutex);
     while(active){
@@ -16,6 +15,12 @@ void *inputServerThread(){
 
         if(kbhit()){
             char ch = getch();
+
+            if(ch == 27){ // Unix specific behavior (arrow keys are represented as escape characters)
+                ch = getchar();
+                if(ch == '[')
+                    ch = getchar();
+            }
 
             pthread_mutex_lock(&inputMutex);
             input = ch;
@@ -28,30 +33,6 @@ void *inputServerThread(){
     pthread_mutex_unlock(&activeMutex);
     return NULL;
 }
-#else
-void *inputServerThread(){
-    struct termios old, new;
-    tcgetattr(0, &old);
-    new = old;
-    new.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(0, TCSANOW, &new);
-
-    pthread_mutex_lock(&activeMutex);
-    while(active){
-        pthread_mutex_unlock(&activeMutex);
-
-        // TODO: Linux unique input system
-        pthread_mutex_lock(&inputMutex);
-        input = read(0, &input, 1);
-        pthread_mutex_unlock(&inputMutex);
-    }
-
-    pthread_mutex_unlock(&activeMutex);
-    return NULL;
-}
-
-static struct termios termOld, termNew;
-#endif
 
 void inputServerInit(){
     if(pthread_mutex_init(&inputMutex, NULL) != 0)
