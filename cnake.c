@@ -30,7 +30,7 @@ bool DEBUG;
 enum SNAKE_DIR direction;
 
 #define RAND_CONSTANT (BOARD_SIZE - APPLE_PADDING * 2)
-#define randomize_position() rand() % RAND_CONSTANT + APPLE_PADDING;
+#define randomize_position() rand() % RAND_CONSTANT + APPLE_PADDING
 
 
 void setApplePos(){
@@ -141,7 +141,7 @@ void displayBoard(){
             
             if(vectorEquals(applePos, y, x))
                 c = '@';
-            else if(intAt == snakeLength)
+            else if(intAt == snakeLength) // Snake head
                 c = !DEBUG ? 'S' : intAt + '0';
             else if(intAt > 0)
                 c = !DEBUG ? 's' : intAt + '0';
@@ -156,6 +156,25 @@ void displayBoard(){
 
 
 int main(int argc, char **argv){
+    // Windows: Set output mode to handle virtual terminal sequences
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut == INVALID_HANDLE_VALUE)
+    {
+        return GetLastError();
+    }
+
+    DWORD dwMode = 0;
+    if (!GetConsoleMode(hOut, &dwMode))
+    {
+        return GetLastError();
+    }
+
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    if (!SetConsoleMode(hOut, dwMode))
+    {
+        return GetLastError();
+    }
+
     printf("\x1b[2J"); // ANSI code ESC[2J: clear the screen
     srand(time(0));
 
