@@ -171,7 +171,7 @@ int main(int argc, char **argv){
         while(state == OK){
             displayBoard();
             
-            usleep(SLEEP_TIME);
+            sleep_msec(SLEEP_TIME);
 
             state = gameTick();
         }

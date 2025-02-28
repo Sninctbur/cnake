@@ -1,4 +1,4 @@
-#define SLEEP_TIME 1000
+#define SLEEP_TIME 100
 #define BOARD_SIZE 12
 #define STARTING_LENGTH 3
 #define BOARD_SIZE_SQRD BOARD_SIZE * BOARD_SIZE
@@ -51,11 +51,13 @@ int kbhit(){
 
 int initSettings(){}
 
+#define sleep_msec(time) usleep(time * 1000)
+
 #else
 #include <windows.h>
 #include <conio.h>
 #define UNIX 0
-#define usleep(time) Sleep(time)
+#define sleep_msec(time) Sleep(time)
 
 int initSettings(){
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
