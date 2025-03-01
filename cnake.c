@@ -37,7 +37,7 @@ void resetGame(){
     snakePos.y = BOARD_SIZE / 2 - 1;
     snakeLength = STARTING_LENGTH;
     direction = DOWN;
-    
+
     gameBoard[snakePos.y][snakePos.x] = STARTING_LENGTH;
 
     setApplePos();
@@ -147,13 +147,13 @@ bool isArrowInput(char c){
 
 int main(int argc, char **argv){
     initSettings(); // On Windows, runs some unique code. On Unix, this is a method stub.
-    printf("\x1b[2J"); // ANSI code ESC[2J: clear the screen
     srand(time(0));
 
     if(argc > 1 && !strcmp(argv[1], "-debug"))
         DEBUG = 1;
     
     for(;;){
+        printf("\x1b[2J"); // ANSI code ESC[2J: clear the screen
         resetGame();
         displayBoard();
 
