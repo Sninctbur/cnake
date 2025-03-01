@@ -22,12 +22,10 @@ void setApplePos(){
     applePos.x = randomize_position();
     applePos.y = randomize_position();
     
-    while(gameBoard[applePos.x][applePos.y] != 0){
+    while(gameBoard[applePos.y][applePos.x] != 0){
         applePos.x = randomize_position();
         applePos.y = randomize_position();
     }
-
-    gameBoard[applePos.x][applePos.y] = -1;
 
     if(DEBUG)
         fprintf(stderr, "New apple position: %d,%d\n", applePos.x, applePos.y);
@@ -40,8 +38,9 @@ void resetGame(){
     snakeLength = STARTING_LENGTH;
     direction = DOWN;
 
-    for(int i = snakeLength; i > 0; i--)
-        gameBoard[snakePos.y - i][snakePos.x] = STARTING_LENGTH - i;
+    // for(int i = snakeLength; i > 0; i--)
+    //     gameBoard[snakePos.y - i][snakePos.x] = STARTING_LENGTH - i;
+    gameBoard[snakePos.y][snakePos.x] = STARTING_LENGTH;
 
     setApplePos();
 }
@@ -139,6 +138,14 @@ void displayBoard(){
     }
 }
 
+bool isArrowInput(char c){
+    for(int i = 0; i < 4; i++)
+        if(ARROW_KEYS[i] == c)
+            return true;
+
+    return false;
+}
+
 
 int main(int argc, char **argv){
     initSettings(); // On Windows, runs some unique code. On Unix, this is a method stub.
@@ -148,23 +155,23 @@ int main(int argc, char **argv){
     if(argc > 1 && !strcmp(argv[1], "-debug"))
         DEBUG = 1;
     
-    resetGame();
-    displayBoard();
-
     for(;;){
-        char response = '\0';
-        printf("Press space to start, or Q to quit\n");
-        while(response != ' '){
-            response = getch();
-            if(response == 'q'){
-                goto cleanup;
-                break;
-            }
-        }
+        resetGame();
+        displayBoard();
 
-        inputServerInit();
+        char response;
+        printf("Press a direction to start, or Q to quit\n");
+        do{
+            response = getch();
+            if(response == 'q')
+                goto cleanup;
+        }
+        while(!isArrowInput(response));
 
         printf("\x1b[2J");
+        input = response; // No need for a mutex because the input server thread isn't live yet
+
+        inputServerInit();
 
         enum GAME_STATE state = gameTick();
 
@@ -175,10 +182,18 @@ int main(int argc, char **argv){
 
             state = gameTick();
         }
-        
+
         inputServerStop();
+
         printf("Score: %d\n", snakeLength - STARTING_LENGTH);
-        resetGame();
+        printf("Press space to retry, or Q to quit\n");
+        
+        do{
+            response = getch();
+            if(response == 'q')
+                goto cleanup;
+        }
+        while(response != ' ');
     }
 cleanup:
     printf("\x1b[2J");

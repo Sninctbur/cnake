@@ -72,7 +72,7 @@ int initSettings(){
 #define KEY_LEFT 75
 #define KEY_RIGHT 77
 
-int initSettings(){
+int initSettings(){ // Microsoft code which activates ANSI character support in CMD and PS
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     if (hOut == INVALID_HANDLE_VALUE)
     {
@@ -94,6 +94,7 @@ int initSettings(){
 }
 #endif
 
+const int ARROW_KEYS[4] = {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT};
 
 enum GAME_STATE {
     OK,
