@@ -52,12 +52,7 @@ int kbhit(){
     return bytesWaiting > 0;
 }
 
-int initSettings(){
-    // struct termios settings;
-    // tcgetattr(STDIN_FILENO, &settings);
-    // settings.c_lflag &= ~(ICANON | ECHO);
-    // tcsetattr(STDIN_FILENO, TCSANOW, &settings);
-}
+int initSettings(){}
 
 #define sleep_msec(time) usleep(time * 1000)
 

@@ -37,9 +37,7 @@ void resetGame(){
     snakePos.y = BOARD_SIZE / 2 - 1;
     snakeLength = STARTING_LENGTH;
     direction = DOWN;
-
-    // for(int i = snakeLength; i > 0; i--)
-    //     gameBoard[snakePos.y - i][snakePos.x] = STARTING_LENGTH - i;
+    
     gameBoard[snakePos.y][snakePos.x] = STARTING_LENGTH;
 
     setApplePos();
